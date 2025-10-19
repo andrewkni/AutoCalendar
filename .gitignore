@@ -1,8 +1,26 @@
-# Default ignored files
-/shelf/
+# Virtual environment
+.venv/
+venv/
+ENV/
+env/
+*.env
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# PyCharm/IDE files
+/.idea/
+/*.iml
 /workspace.xml
-# Editor-based HTTP Client requests
+/shelf/
 /httpRequests/
-# Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+*.swp
