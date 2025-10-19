@@ -1,3 +1,5 @@
+Access using https://autocalendar.streamlit.app/
+
 Plans whole week give a to do list
 Adds directly to Google Calendar
 App based interface w/ Python
