@@ -19,7 +19,7 @@ __pycache__/
 /dataSources/
 /dataSources.local.xml
 
-# Logs and temporary files
+# Logs and temp files
 *.log
 *.tmp
 *.bak
