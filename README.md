@@ -1,5 +1,3 @@
-Access using https://autocalendar.streamlit.app/
-
 Plans whole week give a to do list
 Adds directly to Google Calendar
 App based interface w/ Python
@@ -18,5 +16,5 @@ EX: scroll reel instead, gotta push back physics. AI shift physics into free tim
 
 APIs:
 Google Calendar (Google OAuth 2.0 API)
-StreamLit Web App
+StreamLit App
 Pandas
