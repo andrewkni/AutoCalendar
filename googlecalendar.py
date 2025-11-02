@@ -13,8 +13,7 @@ from googleapiclient.errors import HttpError
 # If modifying these scopes, delete the file token.json.
 SCOPES = ["https://www.googleapis.com/auth/calendar.events"]
 
-
-def main():
+def authenticate():
     creds = None
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -27,26 +26,25 @@ def main():
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
-            "credentials.json", SCOPES
+                "credentials.json", SCOPES
             )
             creds = flow.run_local_server(port=0)
     # Save the credentials for the next run
     with open("token.json", "w") as token:
         token.write(creds.to_json())
 
-    service = build("calendar", "v3", credentials=creds)
+    return build("calendar", "v3", credentials=creds)
 
-    # Call the Calendar API
-    now = datetime.datetime.now(tz=datetime.timezone.utc)
-    end = now + datetime.timedelta(hours=1)
-
-    now_iso = now.isoformat()
-    end_iso = end.isoformat()
-
-    event = Event("Test", now_iso, end_iso)
+def create_event(service, title, start, end):
+    event = Event(title, start.isoformat(), end.isoformat())
 
     event = service.events().insert(calendarId='primary', body=event()).execute()
     print('Event created: %s' % (event.get('htmlLink')))
+
+def print_events(service):
+    now = datetime.datetime.now(tz=datetime.timezone.utc)
+
+    now_iso = now.isoformat()
 
     try:
         st.write("Getting the upcoming 10 events")
@@ -54,7 +52,7 @@ def main():
             service.events()
             .list(
             calendarId="primary",
-            timeMin=now_iso,
+            timeMin = now_iso,
             maxResults=10,
             singleEvents=True,
             orderBy="startTime",
@@ -65,7 +63,6 @@ def main():
 
         if not events:
             st.write("No upcoming events found.")
-            return
 
         # Prints the start and name of the next 10 events
         for event in events:
