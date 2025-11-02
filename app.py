@@ -1,6 +1,5 @@
 import streamlit as st
-import pandas as pd
+import googlecalendar as gc
 
-st.write("AutoCalendar")
-
-
+if st.button("Click to see past 10 events"):
+    gc.main()
