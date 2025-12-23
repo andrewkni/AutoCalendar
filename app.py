@@ -1,6 +1,7 @@
 from event import Event
 import streamlit as st
 import googlecalendar as gc
+import datetime as dt
 
 # Saves list of tasks
 if "tasks" not in st.session_state:
@@ -23,6 +24,8 @@ start_hour = st.time_input("Starting hour")
 end_hour = st.time_input("Ending hour")
 break_time = st.number_input("Minutes between each task (break time)", step=1)
 
+start_dt = dt.datetime.combine(start_date, start_hour)
+end_dt = dt.datetime.combine(end_date, end_hour)
 
 with st.form("add_event"):
     st.write("Add Event")
@@ -31,7 +34,7 @@ with st.form("add_event"):
         "Input priority:",
         (1, 2, 3, 4, 5)
     )
-    duration = st.number_input("Duration of task in minutes", step=1)
+    duration = st.time_input("Duration of task")
 
     submitted = st.form_submit_button("Submit")
     if submitted:
@@ -41,14 +44,22 @@ with st.form("add_conflict"):
     st.write("Add Conflict")
     name = st.text_input("Name of task")
 
-    conflict_date = st.date_input("Date")
+    conflict_date = st.date_input("Start date")
     everyday = st.checkbox("Is every day?")
     init_time = st.time_input("Starting time")
-    end_time = st.time_input("Ending time")
+    duration = st.time_input("Duration of conflict")
+
+    event_start_dt = dt.datetime.combine(conflict_date, init_time)
+    event_end_dt = event_start_dt + dt.timedelta(hours=duration.hour, minutes=duration.minute)
 
     submitted = st.form_submit_button("Submit")
     if submitted:
-        conflicts.append(Event(name, date=conflict_date, start=init_time, end=end_time, fixed=True))
+        if (event_start_dt >= start_dt) and (event_end_dt <= end_dt):
+            conflicts.append(Event(name, date=conflict_date, start=init_time, end=event_end_dt.time(), fixed=True))
+        elif event_start_dt < start_dt:
+            st.write("Start time is before specified time range")
+        else:
+            st.write("End time is after specified time range")
 
 # Allows to remove tasks by clicking on their button
 st.subheader("Current Tasks (click to remove):")

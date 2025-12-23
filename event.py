@@ -3,6 +3,10 @@ import datetime as dt
 # Event
 class Event:
     def __init__(self, title, priority=None, duration=None, date=None, start=None, end=None, fixed=False):
+        # rename event to Untitled if no name
+        if not title:
+            title = 'Untitled'
+
         self.title = title
         self.fixed = fixed
 
@@ -11,13 +15,11 @@ class Event:
             self.date = date
             self.priority = 6
             self.start = dt.datetime.combine(date, start)
-            self.end = dt.datetime.combine(date, end)
-            self.duration = self.end - self.start
+            self.end = end
         # task
         else:
-            self.priority = priority
             self.duration = duration
-
+            self.priority = priority
 
     def print_event(self):
         if self.fixed:
