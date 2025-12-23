@@ -21,12 +21,14 @@ st.header("Welcome to AutoCalendar!")
 start_date = st.date_input("Starting Date")
 end_date = st.date_input("Ending Date")
 
+# Error checking for date
 if end_date < start_date:
     st.error("End date cannot be earlier than start date")
 
 start_time = st.time_input("Starting time")
 end_time = st.time_input("Ending time")
 
+# Error checking for time
 if end_time < start_time:
     st.error("End time cannot be earlier than start time")
 
