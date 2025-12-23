@@ -24,14 +24,18 @@ end_date = st.date_input("Ending Date")
 if end_date < start_date:
     st.error("End date cannot be earlier than start date")
 
-start_hour = st.time_input("Starting hour")
-end_hour = st.time_input("Ending hour")
+start_time = st.time_input("Starting time")
+end_time = st.time_input("Ending time")
+
+if end_time < start_time:
+    st.error("End time cannot be earlier than start time")
+
 break_time = st.number_input("Minutes between each task (break time)", step=1, min_value=0)
 if break_time >= 60:
     st.write("Hidden Sid achievement unlocked")
 
-start_dt = dt.datetime.combine(start_date, start_hour)
-end_dt = dt.datetime.combine(end_date, end_hour)
+start_dt = dt.datetime.combine(start_date, start_time)
+end_dt = dt.datetime.combine(end_date, end_time)
 
 with st.form("add_event"):
     st.write("Add Event")
