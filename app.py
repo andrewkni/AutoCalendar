@@ -60,7 +60,7 @@ for i, event in enumerate(tasks):
 # Allows to remove conflicts by clicking on their button
 st.subheader("Current Conflicts (click to remove):")
 for i, event in enumerate(conflicts):
-    if st.button(f"Conflict #{i+1} : {event.print_event()}", key=f"task_{i}"):
+    if st.button(f"Conflict #{i+1} : {event.print_event()}", key=f"conflict_{i}"):
         conflicts.pop(i)
         st.rerun()
 
