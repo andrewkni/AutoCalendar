@@ -50,12 +50,14 @@ with st.form("add_conflict"):
     if submitted:
         conflicts.append(Event(name, date=conflict_date, start=init_time, end=end_time, fixed=True))
 
+# Allows to remove tasks by clicking on their button
 st.subheader("Current Tasks (click to remove):")
 for i, event in enumerate(tasks):
     if st.button(f"Task #{i+1} : {event.print_event()}", key=f"task_{i}"):
         tasks.pop(i)
         st.rerun()
 
+# Allows to remove conflicts by clicking on their button
 st.subheader("Current Conflicts (click to remove):")
 for i, event in enumerate(conflicts):
     if st.button(f"Conflict #{i+1} : {event.print_event()}", key=f"task_{i}"):

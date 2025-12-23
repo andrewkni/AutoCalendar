@@ -1,5 +1,6 @@
 import datetime as dt
 
+# Event
 class Event:
     def __init__(self, title, priority=None, duration=None, date=None, start=None, end=None, fixed=False):
         self.title = title
