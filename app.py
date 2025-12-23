@@ -1,12 +1,16 @@
 from event import Event
 import streamlit as st
 import googlecalendar as gc
-import datetime as dt
 
 # Saves list of tasks
 if "tasks" not in st.session_state:
     st.session_state.tasks = []
 tasks = st.session_state.tasks
+
+# Saves list of conflicts
+if "conflicts" not in st.session_state:
+    st.session_state.conflicts = []
+conflicts = st.session_state.conflicts
 
 # Connects to Google Calendar
 service = gc.authenticate()
@@ -31,7 +35,7 @@ with st.form("add_event"):
 
     submitted = st.form_submit_button("Submit")
     if submitted:
-        tasks.append(Event(name, priority, duration))
+        tasks.append(Event(name, priority, duration, fixed=False))
 
 with st.form("add_conflict"):
     st.write("Add Conflict")
@@ -44,11 +48,19 @@ with st.form("add_conflict"):
 
     submitted = st.form_submit_button("Submit")
     if submitted:
-        tasks.append(Event(name, priority, duration))
+        conflicts.append(Event(name, date=conflict_date, start=init_time, end=end_time, fixed=True))
 
-st.subheader("Current Tasks:")
-for event in tasks:
-    st.write(event.print_event())
+st.subheader("Current Tasks (click to remove):")
+for i, event in enumerate(tasks):
+    if st.button(f"Task #{i+1} : {event.print_event()}", key=f"task_{i}"):
+        tasks.pop(i)
+        st.rerun()
+
+st.subheader("Current Conflicts (click to remove):")
+for i, event in enumerate(conflicts):
+    if st.button(f"Conflict #{i+1} : {event.print_event()}", key=f"task_{i}"):
+        conflicts.pop(i)
+        st.rerun()
 
 
 if st.button("Add to Google Calendar"):
