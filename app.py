@@ -20,9 +20,15 @@ st.header("Welcome to AutoCalendar!")
 
 start_date = st.date_input("Starting Date")
 end_date = st.date_input("Ending Date")
+
+if end_date < start_date:
+    st.error("End date cannot be earlier than start date")
+
 start_hour = st.time_input("Starting hour")
 end_hour = st.time_input("Ending hour")
-break_time = st.number_input("Minutes between each task (break time)", step=1)
+break_time = st.number_input("Minutes between each task (break time)", step=1, min_value=0)
+if break_time >= 60:
+    st.write("Hidden Sid achievement unlocked")
 
 start_dt = dt.datetime.combine(start_date, start_hour)
 end_dt = dt.datetime.combine(end_date, end_hour)
@@ -75,7 +81,8 @@ for i, event in enumerate(conflicts):
         conflicts.pop(i)
         st.rerun()
 
+st.divider()
 
-if st.button("Add to Google Calendar"):
+if st.button("Add to Google Calendar", type='primary'):
     for event in tasks:
         gc.create_event(service, event)
