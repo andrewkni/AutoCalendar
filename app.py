@@ -37,6 +37,8 @@ with st.form("add_conflict"):
     st.write("Add Conflict")
     name = st.text_input("Name of task")
 
+    conflict_date = st.date_input("Date")
+    everyday = st.checkbox("Is every day?")
     init_time = st.time_input("Starting time")
     end_time = st.time_input("Ending time")
 
