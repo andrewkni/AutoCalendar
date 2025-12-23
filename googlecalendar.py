@@ -35,9 +35,7 @@ def authenticate():
 
     return build("calendar", "v3", credentials=creds)
 
-def create_event(service, title, start, end):
-    event = Event(title, start.isoformat(), end.isoformat())
-
+def create_event(service, event):
     event = service.events().insert(calendarId='primary', body=event()).execute()
     print('Event created: %s' % (event.get('htmlLink')))
 

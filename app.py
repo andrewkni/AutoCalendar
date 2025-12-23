@@ -1,30 +1,54 @@
+from event import Event
 import streamlit as st
 import googlecalendar as gc
 import datetime as dt
 
+# Saves list of tasks
+if "tasks" not in st.session_state:
+    st.session_state.tasks = []
+tasks = st.session_state.tasks
+
+# Connects to Google Calendar
 service = gc.authenticate()
-# Call the Calendar API
-now = dt.datetime.now(tz=dt.timezone.utc)
-end = now + dt.timedelta(hours=1)
 
-st.write("Welcome to AutoCalendar!")
+st.header("Welcome to AutoCalendar!")
 
-st.write(st.text_input("Add to do item"))
+start_date = st.date_input("Starting Date")
+end_date = st.date_input("Ending Date")
+start_hour = st.time_input("Starting hour")
+end_hour = st.time_input("Ending hour")
+break_time = st.number_input("Minutes between each task (break time)", step=1)
 
-with st.form("todolist"):
-    st.write("To Do List")
-    item = st.text_input("Form slider")
 
-    # Every form must have a submit button.
+with st.form("add_event"):
+    st.write("Add Event")
+    name = st.text_input("Name of task")
+    priority = st.selectbox(
+        "Input priority:",
+        (1, 2, 3, 4, 5)
+    )
+    duration = st.number_input("Duration of task in minutes", step=1)
+
     submitted = st.form_submit_button("Submit")
     if submitted:
-        st.write("slider", item)
+        tasks.append(Event(name, priority, duration))
+
+with st.form("add_conflict"):
+    st.write("Add Conflict")
+    name = st.text_input("Name of task")
+
+    init_time = st.time_input("Starting time")
+    end_time = st.time_input("Ending time")
+
+    submitted = st.form_submit_button("Submit")
+    if submitted:
+        tasks.append(Event(name, priority, duration))
+
+st.subheader("Current Tasks:")
+for event in tasks:
+    st.write(event.print_event())
 
 
-
-# front end
-if st.button("Click to add event"):
-    gc.create_event(service, "Test", now, end)
-    st.write("Event created!")
-if st.button("Click to see past 10 events"):
-    gc.print_events(service)
+if st.button("Add to Google Calendar"):
+    for event in tasks:
+        gc.create_event(service, event)
