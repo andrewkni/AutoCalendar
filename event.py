@@ -2,21 +2,21 @@ import datetime as dt
 
 # Event
 class Event:
-    def __init__(self, title, priority=None, duration=None, date=None, start=None, end=None, fixed=False):
+    def __init__(self, title, everyday, priority=None, duration=None, start=None, end=None, fixed=False):
         # rename event to Untitled if no name
         if not title:
             title = 'Untitled'
 
         self.title = title
         self.fixed = fixed
+        self.everyday = everyday
 
-        # conflict
+        # conflict (fixed time)
         if self.fixed:
-            self.date = date
             self.priority = 6
-            self.start = dt.datetime.combine(date, start)
+            self.start = start
             self.end = end
-        # task
+        # task (unfixed time)
         else:
             self.duration = duration
             self.priority = priority
@@ -25,7 +25,6 @@ class Event:
         if self.fixed:
             return (
                 f"Name: {self.title}\n"
-                f"Date: {self.date}\n"
                 f"Start: {self.start}\n"
                 f"End: {self.end}"
             )
