@@ -36,8 +36,9 @@ def schedule(tasks, conflicts, break_time, start_date, end_date, start_time, end
             start_dt = dt.datetime.combine(current_day, start_time)
 
 
+    break_time_original = break_time
     # Cut break time if schedules do not fit
-    while break_time > 0:
+    while True:
         events = []
         all_tasks_filled = True
         time_ranges = time_range_list.copy()
@@ -53,7 +54,6 @@ def schedule(tasks, conflicts, break_time, start_date, end_date, start_time, end
             # If fails, make all_tasked_failed false. If success, move onto next task
             task_filled = False
             for time in time_ranges:
-                TimeRange.print_time_range(time)
                 if TimeRange.get_duration(time) >= task_duration:
                     event = tasks[i]
 
@@ -74,19 +74,21 @@ def schedule(tasks, conflicts, break_time, start_date, end_date, start_time, end
             if not task_filled:
                 all_tasks_filled = False
 
-        # If every task was scheduled, break out of loop. otherwise, cut break by half
-        if all_tasks_filled:
+        # If every task was scheduled or no break, break out of loop. otherwise, cut break by half
+        if all_tasks_filled or break_time == 0:
             break
 
-        if break_time == 0:
-            st.error('Impossible to schedule all events')
-
         break_time = break_time // 2
+
+    # If break time is already 0, send error and give the best effort scheduling other events
+    if break_time == 0:
+        st.error('ERROR: Impossible to schedule all events with given time parameters.')
+    elif break_time < break_time_original:
+        st.warning('Break time reduced to ' + str(break_time) + ' min to fit all events.')
 
     print('---')
     for event in events:
         print(event.print_event())
-
 
     return events
 
@@ -177,7 +179,7 @@ def main():
                                     (i != num_days) or (event_end_dt.time() <= end_time)):
                                 conflicts.append(
                                     Event(name, everyday, start=event_start_dt + dt.timedelta(days=i), end=event_end_dt
-                                         + dt.timedelta(days=i, hours=duration.hour, minutes=duration.minute), fixed=True))
+                                         + dt.timedelta(days=i), fixed=True))
                 elif event_start_dt < start_dt:
                     st.write("Start time is before specified time range")
                 else:
@@ -209,10 +211,15 @@ def main():
     # Import to Google Calendar
     if st.button("Add to Google Calendar", type='primary'):
         events = schedule(tasks, conflicts, break_time, start_date, end_date, start_time, end_time)
-        st.toast("Event added to Google Calendar!", icon='📅')
+        st.toast("Events added to Google Calendar!", icon='📅')
 
-        #for event in events:
-           #gc.create_event(service, event)
+        for event in events:
+           gc.create_event(service, event)
+
+        for conflict in conflicts:
+            gc.create_event(service, conflict)
+
+        st.rerun()
 
 if __name__ == "__main__":
     main()

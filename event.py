@@ -1,5 +1,3 @@
-import datetime as dt
-
 # Event
 class Event:
     def __init__(self, title, everyday=False, priority=None, duration=None, start=None, end=None, fixed=False):
@@ -40,11 +38,11 @@ class Event:
         event = {
             'summary': self.title,
             'start': {
-                'dateTime': self.start,
+                'dateTime': self.start.isoformat(),
                 'timeZone': 'America/Los_Angeles',
             },
             'end': {
-                'dateTime': self.end,
+                'dateTime': self.end.isoformat(),
                 'timeZone': 'America/Los_Angeles',
             },
         }
