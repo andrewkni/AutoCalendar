@@ -1,7 +1,7 @@
-# AutoCalendar 🗓️
+# AutoCalendar
 
-AutoCalendar is a **desktop-based Python application** that converts a prioritized to-do list into **scheduled Google Calendar events**.  
-It runs locally using a **Streamlit interface** and connects to Google Calendar through the **Google Calendar API (OAuth 2.0 Desktop App flow)**.
+AutoCalendar is a desktop-based Python application that converts a prioritized to-do list into scheduled Google Calendar events.  
+It runs locally using a Streamlit interface and connects to Google Calendar through the Google Calendar API (OAuth 2.0 Desktop App flow).
 
 ---
 
@@ -96,11 +96,6 @@ pip install -r requirements.txt
    credentials.json
 
 7. Place credentials.json in the project root directory
-
-IMPORTANT:
-- Do NOT commit credentials.json to GitHub
-- The app will open a browser window for Google login on first run
-- OAuth tokens are stored locally on your machine
 
 ## Running the App
 ```bash
