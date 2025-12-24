@@ -65,7 +65,6 @@ def schedule(tasks, conflicts, break_time, start_date, end_date, start_time, end
 
                     TimeRange.remove_time(time, task_duration)
 
-                    event.fixed = True
                     events.append(event)
                     task_filled = True
 
@@ -74,16 +73,18 @@ def schedule(tasks, conflicts, break_time, start_date, end_date, start_time, end
             if not task_filled:
                 all_tasks_filled = False
 
-        # If every task was scheduled or no break, break out of loop. otherwise, cut break by half
-        if all_tasks_filled or break_time == 0:
+        # If every task was scheduled, break out of loop. otherwise, cut break by half
+        if all_tasks_filled:
+            break
+
+        # If break time is already 0, send error and give the best effort scheduling other events
+        if break_time == 0:
+            st.error('ERROR: Impossible to schedule all events with given time parameters.')
             break
 
         break_time = break_time // 2
 
-    # If break time is already 0, send error and give the best effort scheduling other events
-    if break_time == 0:
-        st.error('ERROR: Impossible to schedule all events with given time parameters.')
-    elif break_time < break_time_original:
+    if break_time < break_time_original:
         st.warning('Break time reduced to ' + str(break_time) + ' min to fit all events.')
 
     print('---')
@@ -92,6 +93,25 @@ def schedule(tasks, conflicts, break_time, start_date, end_date, start_time, end
 
     return events
 
+# Prints current tasks and conflicts, allows to remove tasks by clicking button
+def print_task_conflicts(tasks, conflicts):
+    col1, col2 = st.columns(2, gap='large')
+
+    with col1:
+        # Allows to remove tasks by clicking on their button
+        st.subheader("Current Tasks (click to remove):")
+        for i, event in enumerate(tasks):
+            if st.button(f"Task #{i + 1}: {event.print_event()}", key=f"task_{i}"):
+                tasks.pop(i)
+                st.rerun()
+
+    with col2:
+        # Allows to remove conflicts by clicking on their button
+        st.subheader("Current Conflicts (click to remove):")
+        for i, event in enumerate(conflicts):
+            if st.button(f"Conflict #{i + 1}: {event.print_event()}", key=f"conflict_{i}"):
+                conflicts.pop(i)
+                st.rerun()
 
 def main():
     # Saves list of tasks
@@ -185,23 +205,8 @@ def main():
                 else:
                     st.write("End time is after specified time range")
 
-    col1, col2 = st.columns(2, gap='large')
-
-    with col1:
-        # Allows to remove tasks by clicking on their button
-        st.subheader("Current Tasks (click to remove):")
-        for i, event in enumerate(tasks):
-            if st.button(f"Task #{i + 1}: {event.print_event()}", key=f"task_{i}"):
-                tasks.pop(i)
-                st.rerun()
-
-    with col2:
-        # Allows to remove conflicts by clicking on their button
-        st.subheader("Current Conflicts (click to remove):")
-        for i, event in enumerate(conflicts):
-            if st.button(f"Conflict #{i + 1}: {event.print_event()}", key=f"conflict_{i}"):
-                conflicts.pop(i)
-                st.rerun()
+    # Prints current tasks and conflicts, allows user to remove by clicking
+    print_task_conflicts(tasks, conflicts)
 
     st.divider()
 
@@ -218,8 +223,6 @@ def main():
 
         for conflict in conflicts:
             gc.create_event(service, conflict)
-
-        st.rerun()
 
 if __name__ == "__main__":
     main()

@@ -18,20 +18,25 @@ class Event:
         else:
             self.duration = duration
             self.priority = priority
+            self.start = None
+            self.end = None
 
     def print_event(self):
-        if self.fixed:
-            return (
-                f"{self.title}  \n"
-                f"Start: {self.start}  \n"
-                f"End: {self.end}"
-            )
-        else:
+        # Print duration if task (not fixed conflict)
+        if not self.fixed:
             return (
                 f"{self.title}  \n"
                 f"Priority: {self.priority}\n"
                 f"Duration: {self.duration}"
             )
+
+        else:
+            return (
+            f"{self.title}  \n"
+            f"Start: {self.start}  \n"
+            f"End: {self.end}"
+            )
+
 
     # Exports event to be created in Google Calendar
     def __call__(self):
