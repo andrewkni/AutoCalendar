@@ -2,7 +2,7 @@ import datetime as dt
 
 # Event
 class Event:
-    def __init__(self, title, everyday, priority=None, duration=None, start=None, end=None, fixed=False):
+    def __init__(self, title, everyday=False, priority=None, duration=None, start=None, end=None, fixed=False):
         # rename event to Untitled if no name
         if not title:
             title = 'Untitled'
@@ -24,13 +24,13 @@ class Event:
     def print_event(self):
         if self.fixed:
             return (
-                f"Name: {self.title}\n"
-                f"Start: {self.start}\n"
+                f"{self.title}  \n"
+                f"Start: {self.start}  \n"
                 f"End: {self.end}"
             )
         else:
             return (
-                f"Name: {self.title}\n"
+                f"{self.title}  \n"
                 f"Priority: {self.priority}\n"
                 f"Duration: {self.duration}"
             )
@@ -50,3 +50,9 @@ class Event:
         }
 
         return event
+
+    def get_start_dt(self):
+        return self.start
+
+    def get_end_dt(self):
+        return self.end
