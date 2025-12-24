@@ -107,3 +107,8 @@ IMPORTANT:
 streamlit run app.py
 ```
 The app runs locally and opens in your browser.
+
+## Contributors
+
+Andrew Ni & Aidan Haya
+12/24/2025
