@@ -6,13 +6,10 @@ from time_range import TimeRange
 
 # Algorithm to compute a schedule for given tasks, conflicts, start time, end time for each day
 # Returns a list of all event items to be imported into Google Calendar
-def schedule(tasks, conflicts, start_date, end_date, start_time, end_time):
+def schedule(tasks, conflicts, break_time, start_date, end_date, start_time, end_time):
     events = []  # final array of all Events
-    # Sort conflicts by time (earliest conflict is first)
-    conflicts.sort(key=lambda event: event.start)
-
     # Sort tasks by priority (highest priority is first)
-    tasks.sort(key=lambda event: event.priority)
+    tasks.sort(key=lambda item: item.priority, reverse=True)
 
     time_range_list = []  # array of time_range objects
 
@@ -26,18 +23,70 @@ def schedule(tasks, conflicts, start_date, end_date, start_time, end_time):
     conflict_count = 0
 
     for i in range(break_points):
+        # Next is conflict
         if (len(conflicts) > conflict_count) and (
                 conflicts[conflict_count].get_start_dt() <= dt.datetime.combine(current_day, end_time)):
             time_range_list.append(TimeRange(start_dt, conflicts[conflict_count].get_start_dt()))
             start_dt = conflicts[conflict_count].get_end_dt()
             conflict_count += 1
+        # Next is end of day
         else:
             time_range_list.append(TimeRange(start_dt, dt.datetime.combine(current_day, end_time)))
             current_day += dt.timedelta(days=1)
             start_dt = dt.datetime.combine(current_day, start_time)
 
-    for time_range in time_range_list:
-        time_range.print_time_range()
+
+    # Cut break time if schedules do not fit
+    while break_time > 0:
+        events = []
+        all_tasks_filled = True
+        time_ranges = time_range_list.copy()
+
+        # Attempt to fill every task into the schedule
+        for i in range(len(tasks)):
+            task = tasks[i]
+
+            # Task duration in minutes + break
+            duration = task.duration
+            task_duration = task.duration.hour*60 + task.duration.minute + break_time
+            # Attempt to fill task into any time slot
+            # If fails, make all_tasked_failed false. If success, move onto next task
+            task_filled = False
+            for time in time_ranges:
+                TimeRange.print_time_range(time)
+                if TimeRange.get_duration(time) >= task_duration:
+                    event = tasks[i]
+
+                    event.start = time.start
+
+                    # Calculate end time for event
+                    duration_delta = dt.timedelta(hours=duration.hour, minutes=duration.minute)
+                    event.end = event.start + duration_delta
+
+                    TimeRange.remove_time(time, task_duration)
+
+                    event.fixed = True
+                    events.append(event)
+                    task_filled = True
+
+                    break
+
+            if not task_filled:
+                all_tasks_filled = False
+
+        # If every task was scheduled, break out of loop. otherwise, cut break by half
+        if all_tasks_filled:
+            break
+
+        if break_time == 0:
+            st.error('Impossible to schedule all events')
+
+        break_time = break_time // 2
+
+    print('---')
+    for event in events:
+        print(event.print_event())
+
 
     return events
 
@@ -159,7 +208,7 @@ def main():
 
     # Import to Google Calendar
     if st.button("Add to Google Calendar", type='primary'):
-        events = schedule(tasks, conflicts, start_date, end_date, start_time, end_time)
+        events = schedule(tasks, conflicts, break_time, start_date, end_date, start_time, end_time)
         st.toast("Event added to Google Calendar!", icon='📅')
 
         #for event in events:

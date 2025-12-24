@@ -12,3 +12,7 @@ class TimeRange:
 
     def print_time_range(self):
         print(f"{self.start.strftime('%Y-%m-%d %H:%M:%S')} to {self.end.strftime('%Y-%m-%d %H:%M:%S')}")
+
+    # Removes a certain amount of time from the start of the time range
+    def remove_time(self, time):
+        self.start += dt.timedelta(minutes=time)
